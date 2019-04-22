@@ -3,6 +3,7 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:notas_cliente/Model/MenuItem.dart';
 import 'package:notas_cliente/Utils/LoginProvider.dart';
 import 'package:notas_cliente/View/Login/LoginActivity.dart';
+import 'package:notas_cliente/View/Notas/NotasActivity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuState extends StatefulWidget{
@@ -73,7 +74,12 @@ class MenuWidget extends State<MenuState>{
   void _getSelectedOption(int index){
     switch(index){
       case 0:{
-
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context)=>NotasState(
+            title: "Notas",
+          ))
+        );
       }break;
       case 1:{
 
@@ -92,6 +98,18 @@ class MenuWidget extends State<MenuState>{
         context: context,
         builder: (BuildContext context){
           return AlertDialog(
+            titleTextStyle: TextStyle(
+              color: Colors.white
+            ),
+            contentTextStyle: TextStyle(
+              color: Colors.white
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(25.0)
+              )
+            ),
+            backgroundColor: Colors.deepOrangeAccent,
             title: Text("Confirmación"),
             content: Text("Esta seguro de cerrar sesión ?"),
             actions: <Widget>[

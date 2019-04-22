@@ -163,7 +163,7 @@ class LoginWidget extends State<LoginState>{
           height: 60.0,
           child: CircularProgressIndicator(
             strokeWidth: 5.0,
-            //valueColor: AlwaysStoppedAnimation(Colors.black),
+            valueColor: AlwaysStoppedAnimation(Colors.black),
           ),
         ),
       ):Center(
