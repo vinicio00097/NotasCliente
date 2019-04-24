@@ -80,6 +80,7 @@ class MenuWidget extends State<MenuState>{
             title: "Notas",
           ))
         );
+        //_selectOptionGrades();
       }break;
       case 1:{
 
@@ -106,7 +107,7 @@ class MenuWidget extends State<MenuState>{
             ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
-                Radius.circular(25.0)
+                Radius.circular(15.0)
               )
             ),
             backgroundColor: Colors.deepOrangeAccent,
@@ -147,6 +148,55 @@ class MenuWidget extends State<MenuState>{
     });
   }
 
+  /*void _selectOptionGrades(){
+    String semestre=DateTime.now().month<7?1.toString():2.toString();
+
+    showModalBottomSheet(
+        context: context,
+        builder: (context){
+          return(
+              SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                child: Column(
+                  children: <Widget>[
+                    ButtonTheme(
+                      minWidth: double.infinity,
+                      child: FlatButton(
+                        shape: StadiumBorder(
+                          side: BorderSide(
+                            color: Colors.black
+                          )
+                        ),
+                        onPressed: (){
+                          Navigator.pop(context,1);
+                        },
+                        child: Text("Ver actuales (Sementre "+semestre+" Año "+DateTime.now().year.toString()+")")
+                      ),
+                    ),
+                    ButtonTheme(
+                      minWidth: double.infinity,
+                      child: FlatButton(
+                        shape: StadiumBorder(
+                            side: BorderSide(
+                                color: Colors.black
+                            )
+                        ),
+                        onPressed: (){
+                          Navigator.pop(context,2);
+                        },
+                        child: Text("Selección (Semestre y Año)")
+                      ),
+                    ),
+                  ],
+                ),
+              )
+          );
+        }
+    ).then((onValue){
+
+    });
+  }*/
+
   @override
   Widget build(BuildContext context) {
     double height=((MediaQuery.of(context).size.height)/_menuItems.length)-20.4;
@@ -159,11 +209,10 @@ class MenuWidget extends State<MenuState>{
             children: <Widget>[
               SizedBox.fromSize(
                 child: Card(
-                  elevation: (10-(index+1)).toDouble(),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(0.0)
-                      )
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(0.0)
+                    )
                   ),
                   margin: EdgeInsets.zero,
                   color: _menuItems[index].color,

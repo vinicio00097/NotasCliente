@@ -14,7 +14,8 @@ class NotasSource implements INotasSource{
       Response response=await post(
           "https://apps.umg.edu.gt/calificaciones2018?v-n",
           headers: {
-            "Cookie":stringBuffer.toString()
+            "Cookie":stringBuffer.toString(),
+            "Content-Type":"application/x-www-form-urlencoded"
           },
           body: "c=$semestre&y=$anio"
       );
