@@ -4,6 +4,7 @@ import 'package:notas_cliente/Model/MenuItem.dart';
 import 'package:notas_cliente/Utils/LoginProvider.dart';
 import 'package:notas_cliente/View/Login/LoginActivity.dart';
 import 'package:notas_cliente/View/Notas/NotasActivity.dart';
+import 'package:notas_cliente/View/Pensum/PensumActivity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuState extends StatefulWidget{
@@ -83,7 +84,12 @@ class MenuWidget extends State<MenuState>{
         //_selectOptionGrades();
       }break;
       case 1:{
-
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context)=>PensumState(
+              title: "Pensum",
+            ))
+        );
       }break;
       case 2:{
 

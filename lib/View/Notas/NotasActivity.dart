@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notas_cliente/Model/Nota.dart';
 import 'package:notas_cliente/Utils/ConnectionStatusSingleton.dart';
+import 'package:notas_cliente/View/Login/LoginActivity.dart';
 import 'package:notas_cliente/ViewModel/NotasViewModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,25 +53,46 @@ class NotasWidget extends State<NotasState>{
         await _notasViewModel.getGrades(_selectedSemestre, _selectedAnio, _cookies).then((onValue){
           switch(onValue[0]){
             case 0:{
-
+              _goLogin();
             }break;
             case 1:{
-
-            }break;
-            case 2:{
-
-            }break;
-            case 100:{
-              _showCustomSnachBar(3, onValue[1]);
-            }break;
-            case 200:{
-              _showCustomSnachBar(3, onValue[1]);
               notasData=onValue[2];
 
               setState(() {
               });
+
+              _showCustomSnachBar(2, "Notas cargadas.");
+            }break;
+            case 2:{
+              _showCustomSnachBar(3,"Ha ocurrido un error, si persiste, visite la página.");
+
+              notasData.clear();
+
+              setState(() {
+              });
+            }break;
+            case 100:{
+              notasData.clear();
+
+              setState(() {
+              });
+
+              _showCustomSnachBar(3, onValue[1]);
+            }break;
+            case 200:{
+              notasData.clear();
+
+              setState(() {
+              });
+
+              _showCustomSnachBar(3, onValue[1]);
             }break;
             case 300:{
+              notasData.clear();
+
+              setState(() {
+              });
+
               _showCustomSnachBar(3, onValue[1]);
             }break;
           }
@@ -85,6 +107,15 @@ class NotasWidget extends State<NotasState>{
         _showCustomSnachBar(2, "No hay conexion a internet.");
       }
     });
+  }
+
+  void _goLogin(){
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context)=>LoginState(
+        title: "Login",
+      ))
+    );
   }
 
   void _showCustomSnachBar(int meaning,String text){
@@ -153,11 +184,12 @@ class NotasWidget extends State<NotasState>{
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Color.fromRGBO(53, 56, 84, 1),
+      //backgroundColor: Color.fromRGBO(53, 56, 84, 1),
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
+              elevation: 0.0,
               backgroundColor: Color.fromRGBO(53, 56, 84, 1),
               expandedHeight: 250.0,
               floating: false,
@@ -191,33 +223,33 @@ class NotasWidget extends State<NotasState>{
                             padding: EdgeInsets.symmetric(vertical: 5)
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
                               DropdownButtonHideUnderline(
-                                  child: DropdownButton<int>(
-                                    hint: Text(
-                                      "Seleccione semestre",
-                                    ),
-                                    items: _semestres.map((number){
-                                      return DropdownMenuItem<int>(
-                                        child: Text(number.toString()),
-                                        value: number,
-                                      );
-                                    }).toList(),
-                                    onChanged: (value){
-                                      _selectedSemestre=value;
+                                child: DropdownButton<int>(
+                                  hint: Text(
+                                    "Semestre",
+                                  ),
+                                  items: _semestres.map((number){
+                                    return DropdownMenuItem<int>(
+                                      child: Text(number.toString()),
+                                      value: number,
+                                    );
+                                  }).toList(),
+                                  onChanged: (value){
+                                    _selectedSemestre=value;
 
-                                      setState(() {
-                                      });
-                                    },
-                                    value: _selectedSemestre,
-                                  )
+                                    setState(() {
+                                    });
+                                  },
+                                  value: _selectedSemestre,
+                                )
                               ),
                               DropdownButtonHideUnderline(
                                   child: DropdownButton<int>(
                                     isDense: true,
                                     hint: Text(
-                                      "Seleccione año",
+                                      "Año",
                                     ),
                                     items: _anios.reversed.toList().map((number){
                                       return DropdownMenuItem<int>(
@@ -242,6 +274,7 @@ class NotasWidget extends State<NotasState>{
                           FlatButton(
                             shape: StadiumBorder(
                               side: BorderSide(
+                                width: 1.5,
                                 color: Colors.white,
                               )
                             ),
@@ -263,86 +296,143 @@ class NotasWidget extends State<NotasState>{
         },
         body: Scrollbar(
           child: ListView.builder(
-            padding: EdgeInsets.symmetric(vertical: 0.0),
+            padding: EdgeInsets.symmetric(vertical: 5.0),
             itemBuilder: (context,index){
               return Card(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
                 ),
-                margin: EdgeInsets.zero,
+                margin: EdgeInsets.all(5),
+                elevation: 4,
                 child: Column(
                   children: <Widget>[
-                    ListTile(
-                      title: Text(
-                        notasData[index].nombreCurso,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 20.0
+                    Stack(
+                      children: <Widget>[
+                        Container(
+                          child: Column(
+                            children: <Widget>[
+                              ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  notasData[index].nombreCurso,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: Colors.white
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(10.0),
+                                bottom: Radius.circular(0.0)
+                            ),
+                            color: RegExp("^[0-9]+\$").hasMatch(notasData[index].notaFinal)?
+                              int.tryParse(notasData[index].notaFinal)<61?
+                                Colors.redAccent:
+                                Color.fromRGBO(53, 56, 84, 1):
+                              Color.fromRGBO(53, 56, 84, 1),
+                          ),
                         ),
-                      ),
+
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        FlatButton(
-                          padding: EdgeInsets.all(18.0),
+                        ButtonTheme(
+                          padding: EdgeInsets.all(18),
+                          minWidth: 50,
                           shape: CircleBorder(),
-                          onPressed: (){
-
-                          },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text("P1"),
-                              Padding(padding: EdgeInsets.symmetric(vertical: 2)),
-                              Text(notasData[index].parcialUno)
-                            ],
-                          )
-                        ),
-                        FlatButton(
-                          padding: EdgeInsets.all(18.0),
-                          shape: CircleBorder(),
-                          onPressed: (){
-
-                          },
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text("P2"),
-                              Padding(padding: EdgeInsets.symmetric(vertical: 2)),
-                              Text(notasData[index].parcialDos)
-                            ],
-                          )
-                        ),
-                        FlatButton(
-                            padding: EdgeInsets.all(18.0),
-                            shape: CircleBorder(),
+                          child: FlatButton(
                             onPressed: (){
 
                             },
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Text("Act."),
+                                Text("P1"),
                                 Padding(padding: EdgeInsets.symmetric(vertical: 2)),
-                                Text(notasData[index].actividades)
+                                Text(notasData[index].parcialUno)
                               ],
                             )
+                          ),
                         ),
-                        FlatButton(
-                            padding: EdgeInsets.all(18.0),
-                            shape: CircleBorder(),
-                            onPressed: (){
+                        ButtonTheme(
+                          padding: EdgeInsets.all(18),
+                          minWidth: 50,
+                          shape: CircleBorder(),
+                          child: FlatButton(
+                              onPressed: (){
 
-                            },
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text("Final"),
-                                Padding(padding: EdgeInsets.symmetric(vertical: 2)),
-                                Text(notasData[index].examenFinal)
-                              ],
-                            )
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text("P2"),
+                                  Padding(padding: EdgeInsets.symmetric(vertical: 2)),
+                                  Text(notasData[index].parcialDos)
+                                ],
+                              )
+                          ),
+                        ),
+                        ButtonTheme(
+                          padding: EdgeInsets.all(18),
+                          minWidth: 50,
+                          shape: CircleBorder(),
+                          child: FlatButton(
+                              onPressed: (){
+
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text("Act."),
+                                  Padding(padding: EdgeInsets.symmetric(vertical: 2)),
+                                  Text(notasData[index].actividades)
+                                ],
+                              )
+                          ),
+                        ),
+                        ButtonTheme(
+                          padding: EdgeInsets.all(18),
+                          minWidth: 50,
+                          shape: CircleBorder(),
+                          child: FlatButton(
+                              onPressed: (){
+
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text("Final"),
+                                  Padding(padding: EdgeInsets.symmetric(vertical: 2)),
+                                  Text(notasData[index].examenFinal)
+                                ],
+                              )
+                          ),
+                        ),
+                        ButtonTheme(
+                          padding: EdgeInsets.all(18),
+                          minWidth: 50,
+                          shape: CircleBorder(),
+                          child: FlatButton(
+                              onPressed: (){
+
+                              },
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text("Nota"),
+                                  Padding(padding: EdgeInsets.symmetric(vertical: 2)),
+                                  Text(notasData[index].notaFinal)
+                                ],
+                              )
+                          ),
                         ),
                       ],
                     )

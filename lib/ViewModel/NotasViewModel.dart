@@ -24,22 +24,8 @@ class NotasViewModel{
 
           if(errorMsg!=null){
             if(errorMsg.text.contains("insolvente")){
-              List<Element> rowGrades=notesTable.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-
-              for(Element rowGrade in rowGrades){
-                List<Element> dataRow=rowGrade.getElementsByTagName("td");
-
-                notas.add(new Nota(
-                    nombreCurso: dataRow[0].text,
-                    parcialUno: dataRow[1].text,
-                    parcialDos: dataRow[2].text,
-                    actividades: dataRow[3].text,
-                    examenFinal: dataRow[4].text,
-                    notaFinal: dataRow[5].text
-                ));
-              }
               
-              return [200,"Insolvente",notas];
+              return ServiceErrors.Insolvente;
             }else{
               return ServiceErrors.Unknown_Error;
             }
@@ -52,9 +38,10 @@ class NotasViewModel{
               notas.add(new Nota(
                   nombreCurso: dataRow[0].text,
                   parcialUno: dataRow[1].text,
-                  actividades: dataRow[2].text,
-                  examenFinal: dataRow[3].text,
-                  notaFinal: dataRow[4].text
+                  parcialDos: dataRow[2].text,
+                  actividades: dataRow[3].text,
+                  examenFinal: dataRow[4].text,
+                  notaFinal: dataRow[5].text
               ));
             }
 
@@ -65,6 +52,7 @@ class NotasViewModel{
         return [0,response[1]];
       }
     }catch(e){
+      print(e);
       return [2,e];
     }
   }
