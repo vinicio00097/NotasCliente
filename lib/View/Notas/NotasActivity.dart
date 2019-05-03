@@ -56,7 +56,7 @@ class NotasWidget extends State<NotasState>{
               _goLogin();
             }break;
             case 1:{
-              notasData=onValue[2];
+              notasData=onValue[1];
 
               setState(() {
               });
@@ -179,6 +179,24 @@ class NotasWidget extends State<NotasState>{
     }
   }
 
+  Color _getIndicatorColor(String examFinal,String notaFinal){
+    RegExp _hasValidGrade=new RegExp("[0-9]+[\*]*");
+    List<String> _flagsGrades=["NSP","SDE"];
+
+    if(_hasValidGrade.hasMatch(examFinal)){
+      if(int.tryParse(notaFinal)<61){
+        return Colors.redAccent;
+      }else{
+        return Color.fromRGBO(53, 56, 84, 1);
+      }
+    }else{
+      if(_flagsGrades.contains(examFinal)){
+        return Colors.redAccent;
+      }else{
+        return Color.fromRGBO(53, 56, 84, 1);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -331,11 +349,7 @@ class NotasWidget extends State<NotasState>{
                                 top: Radius.circular(10.0),
                                 bottom: Radius.circular(0.0)
                             ),
-                            color: RegExp("^[0-9]+\$").hasMatch(notasData[index].notaFinal)?
-                              int.tryParse(notasData[index].notaFinal)<61?
-                                Colors.redAccent:
-                                Color.fromRGBO(53, 56, 84, 1):
-                              Color.fromRGBO(53, 56, 84, 1),
+                            color: _getIndicatorColor(notasData[index].examenFinal, notasData[index].notaFinal)
                           ),
                         ),
 
