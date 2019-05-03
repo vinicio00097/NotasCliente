@@ -1,9 +1,11 @@
+import 'package:notas_cliente/Model/Curso.dart';
+
 class PensumItem{
-  String codigo;
-  String nombre_curso;
+  String numero_ciclo;
+  List<Curso> cursos;
 
   PensumItem({
-    this.codigo,
-    this.nombre_curso
+    this.numero_ciclo,
+    this.cursos
   });
 }

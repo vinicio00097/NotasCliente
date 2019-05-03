@@ -96,12 +96,6 @@ class NotasWidget extends State<NotasState>{
               _showCustomSnachBar(3, onValue[1]);
             }break;
           }
-
-          if(onValue[0]==1){
-            print(onValue);
-          }else{
-            print(onValue);
-          }
         });
       }else{
         _showCustomSnachBar(2, "No hay conexion a internet.");
