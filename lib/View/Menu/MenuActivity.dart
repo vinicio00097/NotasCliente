@@ -59,16 +59,6 @@ class MenuWidget extends State<MenuState>{
       ),
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
-      leading: IconButton(
-        tooltip: "Cerrar sesión",
-        icon: Image.asset(
-          "assets/log-out.png",
-          color: Colors.white,
-        ),
-        onPressed: (){
-
-        }
-      ),
     );
     return appBar;
   }
