@@ -36,12 +36,12 @@ class NotasViewModel{
               List<Element> dataRow=rowGrade.getElementsByTagName("td");
 
               notas.add(new Nota(
-                  nombreCurso: dataRow[0].text,
-                  parcialUno: dataRow[1].text,
-                  parcialDos: dataRow[2].text,
-                  actividades: dataRow[3].text,
-                  examenFinal: dataRow[4].text,
-                  notaFinal: dataRow[5].text
+                  nombreCurso: dataRow[0].text.trim(),
+                  parcialUno: dataRow[1].text.trim(),
+                  parcialDos: dataRow[2].text.trim(),
+                  actividades: dataRow[3].text.trim(),
+                  examenFinal: dataRow[4].text.trim(),
+                  notaFinal: dataRow[5].text.trim()
               ));
             }
 

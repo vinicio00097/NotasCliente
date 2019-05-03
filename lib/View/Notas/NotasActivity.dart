@@ -22,8 +22,8 @@ class NotasState extends StatefulWidget{
 class NotasWidget extends State<NotasState>{
   List<int> _semestres=List.generate(8, (int index)=>index+1);
   List<int> _anios=List.generate(DateTime.now().year-2006, (int index)=>index+2007);
-  int _selectedSemestre;
-  int _selectedAnio;
+  int _selectedSemestre=DateTime.now().month>6?2:1;
+  int _selectedAnio=DateTime.now().year;
   NotasViewModel _notasViewModel=new NotasViewModel();
   List<Nota> notasData=[];
   Map<String,String> _cookies=new Map();
