@@ -135,7 +135,6 @@ class PensumWidget extends State<PensumState>{
                     child: Column(
                       children: <Widget>[
                         ListTile(
-                          dense: true,
                           contentPadding: EdgeInsets.zero,
                           title: Text(
                             item.nombre,
