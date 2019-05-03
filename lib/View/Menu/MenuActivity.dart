@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:notas_cliente/Model/MenuItem.dart';
 import 'package:notas_cliente/Utils/LoginProvider.dart';
+import 'package:notas_cliente/View/Horario/HorarioActivity.dart';
 import 'package:notas_cliente/View/Login/LoginActivity.dart';
 import 'package:notas_cliente/View/Notas/NotasActivity.dart';
 import 'package:notas_cliente/View/Pensum/PensumActivity.dart';
@@ -92,7 +93,12 @@ class MenuWidget extends State<MenuState>{
         );
       }break;
       case 2:{
-
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context)=>HorarioState(
+              title: "Horario",
+            ))
+        );
       }break;
       case 3:{
         _closeSession();
@@ -121,12 +127,14 @@ class MenuWidget extends State<MenuState>{
             content: Text("Esta seguro de cerrar sesión ?"),
             actions: <Widget>[
               FlatButton(
+                textColor: Colors.white,
                   onPressed: (){
                     Navigator.pop(context,false);
                   },
                   child: Text("No")
               ),
               FlatButton(
+                  textColor: Colors.white,
                   onPressed: (){
                     Navigator.pop(context,true);
                   },

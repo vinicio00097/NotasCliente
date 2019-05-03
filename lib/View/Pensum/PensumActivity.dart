@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notas_cliente/Model/Curso.dart';
 import 'package:notas_cliente/Model/PensumItem.dart';
 import 'package:notas_cliente/Utils/ConnectionStatusSingleton.dart';
 import 'package:notas_cliente/View/Login/LoginActivity.dart';
@@ -107,6 +108,129 @@ class PensumWidget extends State<PensumState>{
   Future<dynamic> _onRefresh() async{
     return await _getPensum();
   }
+  
+  List<Widget> _getCursos(List<Curso> _cursos){
+    List<Widget> _cursosWidget=[];
+    Table table=new Table();
+
+    for(Curso item in _cursos){
+      _cursosWidget.add(
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+          ),
+          elevation: 3,
+          child: Column(
+            children: <Widget>[
+              Stack(
+                children: <Widget>[
+                  Container(
+                    child: Column(
+                      children: <Widget>[
+                        ListTile(
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            item.nombre,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(10.0),
+                            bottom: Radius.circular(0.0)
+                        ),
+                        color: Colors.amber
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 5)
+              ),
+              Table(
+                children: [
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: Text(
+                          "Código",
+                          textAlign: TextAlign.center,
+                        )
+                      ),
+                      TableCell(
+                        child: Text(
+                          "Requisito",
+                          textAlign: TextAlign.center,
+                        )
+                      )
+                    ]
+                  ),
+                  TableRow(
+                      children: [
+                        Padding(padding: EdgeInsets.symmetric(vertical: 2)),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 2)),
+                      ]
+                  ),
+                  TableRow(
+                      children: [
+                        TableCell(
+                            child: Text(
+                              item.codigo,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54
+                              ),
+                            )
+                        ),
+                        TableCell(
+                          child: Text(
+                            item.requisito,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54
+                            )
+                          )
+                        )
+                      ]
+                  )
+                ],
+              )
+              /*ListTile(
+                dense: true,
+                title: Text(
+                  item.nombre,
+                  textAlign: TextAlign.center,
+                ),
+                subtitle: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        Text("Código"),
+                        Text("Requisito")
+                      ],
+                    )
+                  ],
+                ),
+              )*/
+            ],
+          ),
+        )
+      );
+    }
+    
+    return _cursosWidget;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,19 +255,14 @@ class PensumWidget extends State<PensumState>{
                     Radius.circular(10),
                   ),
                 ),
-                margin: EdgeInsets.all(10),
-                elevation: 4,
+                margin: EdgeInsets.all(5),
+                elevation: 3,
                 child: ExpansionTile(
                   title: Text(
                     _ciclosData[index].numero_ciclo.toUpperCase(),
-                    style: TextStyle(
-                        color: Colors.black
-                    ),
-                    textAlign: TextAlign.center,
+                    //textAlign: TextAlign.center,
                   ),
-                  children: <Widget>[
-
-                  ],
+                  children: _getCursos(_ciclosData[index].cursos),
                 ),
               );
             },

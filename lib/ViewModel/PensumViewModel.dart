@@ -29,7 +29,8 @@ class PensumViewModel{
             _cursos.add(
               new Curso(
                 codigo: cursoCellsData[0].text.trim(),
-                nombre: cursoCellsData[1].text.trim()
+                nombre: cursoCellsData[1].text.trim(),
+                requisito: cursoCellsData[2].text.trim()
               )
             );
           }
