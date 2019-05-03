@@ -30,7 +30,6 @@ class LoginState extends StatefulWidget{
 }
 
 class LoginWidget extends State<LoginState>{
-  int _methodLogin=1;
   bool _oneTime=false;
   bool _internet=true;
   final _flutterWebviewPlugin=new FlutterWebviewPlugin();
@@ -64,11 +63,11 @@ class LoginWidget extends State<LoginState>{
   Future _loginAction() async {
     await ConnectionStatusSingleton.verifyConnection().then((onValue) async {
       if(onValue){
-        _flutterWebviewPlugin.launch(
+        /*_flutterWebviewPlugin.launch(
           _targetURL,
           withJavascript: true,
           hidden: true,
-        );
+        );*/
 
         _flutterWebviewPlugin.onDestroy.listen((onDestroy){
           _flutterWebviewPlugin.dispose();
@@ -129,11 +128,6 @@ class LoginWidget extends State<LoginState>{
         if(appStorage.getKeys().length>0){
           _goHome();
         }else{
-          /*String html=await rootBundle.loadString('assets/Acceso_ cuentas de Google.html');
-          _flutterWebviewPlugin.launch(
-            new Uri.dataFromString(html, mimeType: 'text/html',encoding: Encoding.getByName("UTF-8")).toString(),
-            withJavascript: true
-          );*/
           _internet=!_internet;
 
           setState(() {
@@ -156,13 +150,8 @@ class LoginWidget extends State<LoginState>{
 
   @override
   Widget build(BuildContext context) {
-    final double statusbarHeight = MediaQuery
-        .of(context)
-        .padding
-        .top;
-
     return Scaffold(
-      body: /*_methodLogin==1?*/_internet?WebviewScaffold(
+      body: _internet?WebviewScaffold(
         initialChild: Center(
           child: Container(
             width: 60.0,
@@ -182,7 +171,9 @@ class LoginWidget extends State<LoginState>{
           )),
           backgroundColor: Colors.deepOrangeAccent,
         ),
-        url: _targetURL
+        url: _targetURL,
+        withJavascript: true,
+        hidden: true,
       ):Center(
         child: retryState(
           onRetryClick: (){
@@ -193,101 +184,7 @@ class LoginWidget extends State<LoginState>{
             });
           },
         ),
-      )/*Center(
-        child: Form(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
-              children: <Widget>[
-                ListTile(
-                  title: Text(
-                    "Iniciar Sesión",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 25.0,
-                      fontWeight: FontWeight.w600
-                    ),
-                  ),
-                ),
-                TextFormField(
-                  //controller: mountController,
-                  decoration: InputDecoration(
-                    labelText: "Usuario",
-                    border: UnderlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(0.0)),
-                    ),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(
-                    letterSpacing: 1.0,
-                    fontSize: 20.0,
-                    color: Colors.black
-                  ),
-                  validator: (text){
-                    if(text.isEmpty){
-                      return "Campo obligatorio.";
-                    }else{
-                      if(RegExp("^(\\s)+\$").hasMatch(text)){
-                        return "Campo obligatorio.";
-                      }
-                    }
-                  },
-                ),
-                Padding(padding: EdgeInsets.symmetric(vertical: 10.0)),
-                PasswordState(),
-                Padding(padding: EdgeInsets.symmetric(vertical: 20)),
-                ButtonTheme(
-                  minWidth: double.infinity,
-                  child: AnimatedPadding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0,vertical: 10.0),
-                    duration: Duration(seconds: 5),
-                    child: FlatButton(
-                      shape: StadiumBorder(),
-                      onPressed: (){
-
-                      },
-                      padding: EdgeInsets.symmetric(vertical: 15.0),
-                      child: Text(
-                        "Iniciar sesión",
-                        style: TextStyle(
-                            letterSpacing: 3.0,
-                            fontSize: 20.0
-                        ),
-                      ),
-                      color: Color.fromRGBO(133, 144, 255, 1),
-                      colorBrightness: Brightness.dark,
-                    ),
-                  ),
-                ),
-                Padding(padding: EdgeInsets.symmetric(vertical: 10.0)),
-                Text(
-                  "o",
-                  style: TextStyle(
-                    color: Colors.black38
-                  ),
-                ),
-                Padding(padding: EdgeInsets.symmetric(vertical: 10.0)),
-                RaisedButton(
-                  padding: EdgeInsets.all(15.0),
-                  color: Colors.white,
-                  elevation: 1.0,
-                  highlightElevation: 2.0,
-                  shape: CircleBorder(),
-                  onPressed: (){
-                    
-                  },
-                  child: Image.asset(
-                    "assets/icon_google.png",
-                    width: 20,
-                    height: 20,
-                  ),
-                ),
-                Padding(padding: EdgeInsets.symmetric(vertical: 1.0)),
-              ],
-            ),
-          )
-        ),
-      )*/,
+      ),
     );
   }
 }
