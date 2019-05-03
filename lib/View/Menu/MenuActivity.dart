@@ -30,6 +30,7 @@ class MenuWidget extends State<MenuState>{
     new MenuItem(itemTitle: "Horario",color: Colors.purple[400],icon: Icons.date_range),
     new MenuItem(itemTitle: "Cerrar sesión",color: Colors.deepOrangeAccent,assetImage: "assets/log-out.png")
   ];
+
   AppBar appBar;
   SharedPreferences appStorage;
 

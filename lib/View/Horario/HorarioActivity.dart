@@ -167,6 +167,9 @@ class HorarioWidget extends State<HorarioState>{
 
                       ],
                     ),
+                    Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2)
+                    ),
                     Table(
                       children: [
                         TableRow(
@@ -233,7 +236,10 @@ class HorarioWidget extends State<HorarioState>{
                             ]
                         )
                       ],
-                    )
+                    ),
+                    Padding(
+                        padding: EdgeInsets.symmetric(vertical: 2)
+                    ),
                   ],
                 ),
               );

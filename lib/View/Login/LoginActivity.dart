@@ -156,16 +156,33 @@ class LoginWidget extends State<LoginState>{
 
   @override
   Widget build(BuildContext context) {
+    final double statusbarHeight = MediaQuery
+        .of(context)
+        .padding
+        .top;
+
     return Scaffold(
-      body: /*_methodLogin==1?*/_internet?Center(
-        child: Container(
-          width: 60.0,
-          height: 60.0,
-          child: CircularProgressIndicator(
-            strokeWidth: 5.0,
-            valueColor: AlwaysStoppedAnimation(Colors.black),
+      body: /*_methodLogin==1?*/_internet?WebviewScaffold(
+        initialChild: Center(
+          child: Container(
+            width: 60.0,
+            height: 60.0,
+            child: CircularProgressIndicator(
+              strokeWidth: 5.0,
+              valueColor: AlwaysStoppedAnimation(Colors.deepOrangeAccent),
+            ),
           ),
         ),
+        appBar: AppBar(
+          title: Center(child: Text(
+            'Iniciar sesión',
+            style: TextStyle(
+              fontSize: 25,
+            ),
+          )),
+          backgroundColor: Colors.deepOrangeAccent,
+        ),
+        url: _targetURL
       ):Center(
         child: retryState(
           onRetryClick: (){

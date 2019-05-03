@@ -158,7 +158,7 @@ class PensumWidget extends State<PensumState>{
                 ],
               ),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 5)
+                padding: EdgeInsets.symmetric(vertical: 2)
               ),
               Table(
                 children: [
@@ -209,7 +209,10 @@ class PensumWidget extends State<PensumState>{
                       ]
                   )
                 ],
-              )
+              ),
+              Padding(
+                  padding: EdgeInsets.symmetric(vertical: 2)
+              ),
             ],
           ),
         )
@@ -226,7 +229,9 @@ class PensumWidget extends State<PensumState>{
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.amber,
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+        ),
       ),
       body: !_isLoading?RefreshIndicator(
         color: Colors.amber,
