@@ -117,6 +117,7 @@ class HorarioWidget extends State<HorarioState>{
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
+        elevation: 0.0,
         title: Text(widget.title),
         backgroundColor: Colors.purple[400],
       ),
