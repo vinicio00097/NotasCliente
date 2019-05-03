@@ -151,7 +151,7 @@ class NotasWidget extends State<NotasState>{
                         width: 50.0,
                         height: 50.0,
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(Colors.black),
+                          valueColor: AlwaysStoppedAnimation(Color.fromRGBO(53, 56, 84, 1)),
                         ),
                       )
                     ],
