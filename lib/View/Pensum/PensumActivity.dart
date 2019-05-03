@@ -46,6 +46,11 @@ class PensumWidget extends State<PensumState>{
               content: Text("No hay conexión a internet.")
             )
           );
+
+          _isLoading=!_isLoading;
+
+          setState(() {
+          });
         }
       });
     });
@@ -205,24 +210,6 @@ class PensumWidget extends State<PensumState>{
                   )
                 ],
               )
-              /*ListTile(
-                dense: true,
-                title: Text(
-                  item.nombre,
-                  textAlign: TextAlign.center,
-                ),
-                subtitle: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Text("Código"),
-                        Text("Requisito")
-                      ],
-                    )
-                  ],
-                ),
-              )*/
             ],
           ),
         )
@@ -275,7 +262,7 @@ class PensumWidget extends State<PensumState>{
           height: 60.0,
           child: CircularProgressIndicator(
             strokeWidth: 5.0,
-            valueColor: AlwaysStoppedAnimation(Colors.black),
+            valueColor: AlwaysStoppedAnimation(Colors.amber),
           ),
         ),
       ),
