@@ -8,9 +8,9 @@ import 'package:html/parser.dart';
 class PensumViewModel{
   PensumSource _pensumSource=new PensumSource();
 
-  Future<dynamic> getPensum(Map<String,String> cookies) async{
+  Future<dynamic> getPensum(Map<String,String> cookies,String url) async{
     try{
-      List<Object> response=await _pensumSource.getPensum(cookies);
+      List<Object> response=await _pensumSource.getPensum(cookies,url);
 
       if(response[0]==1){
         List<PensumItem> _ciclos=[];

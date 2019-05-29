@@ -8,10 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HorarioState extends StatefulWidget{
   HorarioState({
     Key key,
-    this.title
+    this.title,
+    this.url
   }):super(key:key);
 
   final title;
+  String url;
   @override
   State<StatefulWidget> createState() {
     return HorarioWidget();
@@ -53,6 +55,8 @@ class HorarioWidget extends State<HorarioState>{
         }
       });
     });
+
+    print(widget.url);
     super.initState();
   }
 
@@ -67,7 +71,7 @@ class HorarioWidget extends State<HorarioState>{
   }
 
   Future<dynamic> _getHorario()async{
-    await _horarioViewModel.getHorario(_cookies).then((onValue){
+    await _horarioViewModel.getHorario(_cookies,widget.url).then((onValue){
       switch(onValue[0]){
         case 0:{
           _goLogin();

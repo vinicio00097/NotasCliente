@@ -8,9 +8,9 @@ import 'package:notas_cliente/Utils/ErrorsDefinition.dart';
 class NotasViewModel{
   NotasSource _notasSource=new NotasSource();
 
-  Future<dynamic> getGrades(int semestre,int anio,Map<String,String> cookies) async{
+  Future<dynamic> getGrades(int semestre,int anio,Map<String,String> cookies,String url) async{
     try{
-      List<Object> response=await _notasSource.getGrades(semestre, anio, cookies);
+      List<Object> response=await _notasSource.getGrades(semestre, anio, cookies,url);
 
       if(response[0]==1){
         Document document=parse(response[1]);

@@ -4,7 +4,7 @@ import 'package:notas_cliente/Service/IHorarioSource.dart';
 class HorarioSource implements IHorarioSource{
 
   @override
-  Future getHorario(Map<String, String> cookies) async{
+  Future getHorario(Map<String, String> cookies,String url) async{
     try{
       StringBuffer stringBuffer=new StringBuffer();
       cookies.forEach((key,value){
@@ -12,7 +12,7 @@ class HorarioSource implements IHorarioSource{
       });
 
       Response response=await get(
-        "https://apps.umg.edu.gt/dire",
+        url==null?"https://apps.umg.edu.gt/dire":url,
         headers: {
           "Cookie":stringBuffer.toString(),
           "Content-Type":"application/x-www-form-urlencoded"

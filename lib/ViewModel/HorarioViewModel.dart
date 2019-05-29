@@ -7,9 +7,9 @@ import 'package:html/parser.dart';
 class HorarioViewModel{
   HorarioSource _horarioSource=new HorarioSource();
 
-  Future<dynamic> getHorario(Map<String,String> cookies) async{
+  Future<dynamic> getHorario(Map<String,String> cookies,String url) async{
     try{
-      List<Object> response=await _horarioSource.getHorario(cookies);
+      List<Object> response=await _horarioSource.getHorario(cookies,url);
 
       if(response[0]==1){
         List<Curso> _cursos=[];

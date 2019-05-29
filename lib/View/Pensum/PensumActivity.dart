@@ -9,10 +9,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PensumState extends StatefulWidget{
   PensumState({
     Key key,
-    this.title
+    this.title,
+    this.url
   }):super(key:key);
 
   final title;
+  String url;
   @override
   State<StatefulWidget> createState() {
     return PensumWidget();
@@ -55,6 +57,7 @@ class PensumWidget extends State<PensumState>{
       });
     });
 
+    print(widget.url);
     super.initState();
   }
 
@@ -69,7 +72,7 @@ class PensumWidget extends State<PensumState>{
   }
 
   Future<dynamic> _getPensum() async{
-    await _pensumViewModel.getPensum(_cookies).then((onPensumResponse){
+    await _pensumViewModel.getPensum(_cookies,widget.url).then((onPensumResponse){
       switch(onPensumResponse[0]){
         case 0:{
           _goLogin();

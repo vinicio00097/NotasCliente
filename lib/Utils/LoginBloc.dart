@@ -1,7 +1,7 @@
-import 'package:google_sign_in/google_sign_in.dart';
+//import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 
-class LoginBloc {
+/*class LoginBloc {
   final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email','https://www.googleapis.com/auth/contacts.readonly']);
   // StreamController
   final BehaviorSubject<GoogleSignInAccount> _google = BehaviorSubject<GoogleSignInAccount>();
@@ -19,4 +19,4 @@ class LoginBloc {
   dispose() {
     _google.close();
   }
-}
+}*/

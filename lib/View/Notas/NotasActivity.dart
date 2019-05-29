@@ -8,10 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NotasState extends StatefulWidget{
   NotasState({
     Key key,
-    this.title
+    this.title,
+    this.url
   });
 
   final title;
+  String url;
 
   @override
   State<StatefulWidget> createState() {
@@ -34,6 +36,7 @@ class NotasWidget extends State<NotasState>{
   @override
   void initState() {
     _initAppStorage();
+    print(widget.url);
     super.initState();
   }
 
@@ -50,7 +53,7 @@ class NotasWidget extends State<NotasState>{
   Future<dynamic> _getGrades() async{
     await ConnectionStatusSingleton.verifyConnection().then((onValue) async {
       if(onValue){
-        await _notasViewModel.getGrades(_selectedSemestre, _selectedAnio, _cookies).then((onValue){
+        await _notasViewModel.getGrades(_selectedSemestre, _selectedAnio, _cookies,widget.url).then((onValue){
           switch(onValue[0]){
             case 0:{
               _goLogin();

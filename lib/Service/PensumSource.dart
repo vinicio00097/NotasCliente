@@ -4,7 +4,7 @@ import 'package:notas_cliente/Service/IPensumSource.dart';
 class PensumSource implements IPensumSource{
 
   @override
-  Future getPensum(Map<String, String> cookies) async {
+  Future getPensum(Map<String, String> cookies,String url) async {
     try{
       StringBuffer stringBuffer=new StringBuffer();
       cookies.forEach((key,value){

@@ -10,10 +10,12 @@ import 'package:notas_cliente/View/Login/PasswordWidget.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:notas_cliente/View/Login/RetryWidget.dart';
 import 'package:notas_cliente/View/Menu/MenuActivity.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+//import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:local_auth/local_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:local_auth/error_codes.dart' as auth_error;
 
 class LoginState extends StatefulWidget{
   LoginState({
@@ -37,6 +39,7 @@ class LoginWidget extends State<LoginState>{
   SharedPreferences appStorage;
   StreamSubscription _connectionChangeStream;
   bool _isOnline = false;
+  String webservicesSource;
 
   Future<dynamic> _initAppStorage() async {
     appStorage=await SharedPreferences.getInstance();
@@ -69,15 +72,6 @@ class LoginWidget extends State<LoginState>{
           hidden: true,
         );*/
 
-        _flutterWebviewPlugin.onDestroy.listen((onDestroy){
-          _flutterWebviewPlugin.dispose();
-          exit(0);
-        });
-
-        _flutterWebviewPlugin.onHttpError.listen((onHttpError){
-
-        });
-
         _flutterWebviewPlugin.onStateChanged.listen((state) async{
           switch (state.type){
             case WebViewState.startLoad:{
@@ -96,7 +90,13 @@ class LoginWidget extends State<LoginState>{
                     print("cookies");
                   });
 
-                  _goHome();
+                  webservicesSource=await _flutterWebviewPlugin.evalJavascript(
+                      "document.getElementsByClassName('web-services')[0].innerHTML;"
+                  );
+
+                  _accessWithBiometric().then((onValue){
+                    _goHome();
+                  });
 
                   _flutterWebviewPlugin.dispose();
                   _flutterWebviewPlugin.close();
@@ -138,12 +138,41 @@ class LoginWidget extends State<LoginState>{
 
   }
 
+  Future<dynamic> _accessWithBiometric()async{
+    var localAuth = new LocalAuthentication();
+
+    List<BiometricType> availableBiometrics;
+    await localAuth.getAvailableBiometrics();
+
+    if(availableBiometrics!=null){
+      if(availableBiometrics.contains(BiometricType.fingerprint)){
+        try {
+          bool didAuthenticate = await localAuth.authenticateWithBiometrics(
+              localizedReason: 'Por favor, identifíquese');
+
+          if(didAuthenticate){
+            return 1;
+          }else{
+            return await _accessWithBiometric();
+          }
+        } on PlatformException catch (e) {
+          return 2;
+        }
+      }else{
+        return 3;
+      }
+    }else{
+      return 4;
+    }
+  }
+
   void _goHome(){
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context)=>MenuState(
           title: "Menu",
           flutterWebviewPlugin: _flutterWebviewPlugin,
+          webServicesSource: webservicesSource,
         ))
     );
   }
@@ -163,6 +192,7 @@ class LoginWidget extends State<LoginState>{
           ),
         ),
         appBar: AppBar(
+          elevation: 0.0,
           title: Center(child: Text(
             'Iniciar sesión',
             style: TextStyle(

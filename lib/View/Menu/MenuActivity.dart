@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart';
 import 'package:notas_cliente/Model/MenuItem.dart';
+import 'package:notas_cliente/Model/WebServiceItem.dart';
 import 'package:notas_cliente/Utils/LoginProvider.dart';
 import 'package:notas_cliente/View/Horario/HorarioActivity.dart';
 import 'package:notas_cliente/View/Login/LoginActivity.dart';
@@ -12,10 +17,12 @@ class MenuState extends StatefulWidget{
   MenuState({
     Key key,
     this.title,
-    this.flutterWebviewPlugin
+    this.flutterWebviewPlugin,
+    this.webServicesSource
   });
   
   final title;
+  String webServicesSource;
   final FlutterWebviewPlugin flutterWebviewPlugin;
   @override
   State<StatefulWidget> createState() {
@@ -33,13 +40,35 @@ class MenuWidget extends State<MenuState>{
 
   AppBar appBar;
   SharedPreferences appStorage;
+  List<WebServiceItem> urls=[];
 
   void initState() {
     _initAppStorage().then((onValue){
 
     });
 
+    _dynamicURLs();
     super.initState();
+  }
+  
+  void _dynamicURLs(){
+    urls.clear();
+    dom.Document document=parse(jsonDecode(widget.webServicesSource));
+    List<String> labels=["notas","horarios","pensum"];
+    List<dom.Element> list=document.getElementsByTagName("li");
+
+    for(String label in labels){
+      int index=list.indexWhere((item)=>item.getElementsByTagName("h3")[0].text.toLowerCase().contains(label));
+
+      if(index>0){
+        urls.add(new WebServiceItem(
+          titulo: list.elementAt(index).getElementsByTagName("h3")[0].text.trim(),
+          url: list.elementAt(index).getElementsByTagName("a")[0].attributes["href"]
+        ));
+      }else{
+        urls.add(new WebServiceItem(titulo: "",url: ""));
+      }
+    }
   }
 
   Future<dynamic> _initAppStorage() async {
@@ -64,13 +93,17 @@ class MenuWidget extends State<MenuState>{
     return appBar;
   }
 
-  void _getSelectedOption(int index){
+  void _getSelectedOption(int index,String title){
+    int indexURL=urls.indexWhere((item)=>item.titulo.toLowerCase().contains(title.toLowerCase()));
+
+    print(urls.indexWhere((item)=>item.titulo.toLowerCase().contains(title.toLowerCase())));
     switch(index){
       case 0:{
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context)=>NotasState(
-            title: "Notas",
+            title: title,
+            url: indexURL<0?null:urls.elementAt(indexURL).url,
           ))
         );
         //_selectOptionGrades();
@@ -79,7 +112,8 @@ class MenuWidget extends State<MenuState>{
         Navigator.push(
             context,
             MaterialPageRoute(builder: (context)=>PensumState(
-              title: "Pensum",
+              title: title,
+              url: indexURL<0?null:urls.elementAt(indexURL).url,
             ))
         );
       }break;
@@ -87,7 +121,8 @@ class MenuWidget extends State<MenuState>{
         Navigator.push(
             context,
             MaterialPageRoute(builder: (context)=>HorarioState(
-              title: "Horario",
+              title: title,
+              url: indexURL<0?null:urls.elementAt(indexURL).url,
             ))
         );
       }break;
@@ -204,7 +239,7 @@ class MenuWidget extends State<MenuState>{
 
   @override
   Widget build(BuildContext context) {
-    double height=((MediaQuery.of(context).size.height)/_menuItems.length)-20.4;
+    double height=((MediaQuery.of(context).size.height)/_menuItems.length)-20;
     
     return Scaffold(
       appBar: _getAppBar(),
@@ -251,7 +286,7 @@ class MenuWidget extends State<MenuState>{
                   color: Colors.transparent,
                   child: new InkWell(
                     onTap: (){
-                      _getSelectedOption(index);
+                      _getSelectedOption(index,_menuItems[index].itemTitle);
                     },
                   )
                 )
