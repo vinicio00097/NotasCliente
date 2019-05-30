@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart';
+import 'package:http/http.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:notas_cliente/Model/MenuItem.dart';
 import 'package:notas_cliente/Model/WebServiceItem.dart';
 import 'package:notas_cliente/Utils/LoginProvider.dart';
@@ -12,6 +14,7 @@ import 'package:notas_cliente/View/Login/LoginActivity.dart';
 import 'package:notas_cliente/View/Notas/NotasActivity.dart';
 import 'package:notas_cliente/View/Pensum/PensumActivity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 class MenuState extends StatefulWidget{
   MenuState({
@@ -39,8 +42,10 @@ class MenuWidget extends State<MenuState>{
   ];
 
   AppBar appBar;
-  SharedPreferences appStorage;
+  SharedPreferences _appStorage;
   List<WebServiceItem> urls=[];
+  var localAuth = new LocalAuthentication();
+  Map<String,String> _cookies=new Map();
 
   void initState() {
     _initAppStorage().then((onValue){
@@ -51,28 +56,33 @@ class MenuWidget extends State<MenuState>{
     super.initState();
   }
   
-  void _dynamicURLs(){
+  void _dynamicURLs()async{
     urls.clear();
-    dom.Document document=parse(jsonDecode(widget.webServicesSource));
-    List<String> labels=["notas","horarios","pensum"];
-    List<dom.Element> list=document.getElementsByTagName("li");
+    if(widget.webServicesSource!=null){
+      dom.Document document=parse(jsonDecode(widget.webServicesSource));
+      List<String> labels=["notas","horarios","pensum"];
+      List<dom.Element> list=document.getElementsByTagName("li");
 
-    for(String label in labels){
-      int index=list.indexWhere((item)=>item.getElementsByTagName("h3")[0].text.toLowerCase().contains(label));
+      for(String label in labels){
+        int index=list.indexWhere((item)=>item.getElementsByTagName("h3")[0].text.toLowerCase().contains(label));
 
-      if(index>0){
-        urls.add(new WebServiceItem(
-          titulo: list.elementAt(index).getElementsByTagName("h3")[0].text.trim(),
-          url: list.elementAt(index).getElementsByTagName("a")[0].attributes["href"]
-        ));
-      }else{
-        urls.add(new WebServiceItem(titulo: "",url: ""));
+        if(index>0){
+          urls.add(new WebServiceItem(
+              titulo: list.elementAt(index).getElementsByTagName("h3")[0].text.trim(),
+              url: list.elementAt(index).getElementsByTagName("a")[0].attributes["href"]
+          ));
+        }else{
+          urls.add(new WebServiceItem(titulo: "",url: ""));
+        }
       }
     }
   }
 
   Future<dynamic> _initAppStorage() async {
-    appStorage=await SharedPreferences.getInstance();
+    _appStorage=await SharedPreferences.getInstance();
+    for(String key in _appStorage.getKeys()){
+      _cookies[key]=_appStorage.get(key);
+    }
     return true;
   }
 
@@ -132,7 +142,7 @@ class MenuWidget extends State<MenuState>{
     }
   }
 
-  void _closeSession(){
+  void _closeSession()async{
     showDialog(
         context: context,
         builder: (BuildContext context){
@@ -173,7 +183,7 @@ class MenuWidget extends State<MenuState>{
       if(onValue!=null){
         if(onValue){
           widget.flutterWebviewPlugin.cleanCookies();
-          appStorage.clear();
+          _appStorage.clear();
 
           Navigator.pushReplacement(
             context,

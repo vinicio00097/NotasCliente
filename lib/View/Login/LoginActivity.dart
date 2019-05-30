@@ -39,8 +39,8 @@ class LoginWidget extends State<LoginState>{
   SharedPreferences appStorage;
   StreamSubscription _connectionChangeStream;
   bool _isOnline = false;
-  String webservicesSource;
-
+  var localAuth = new LocalAuthentication();
+  String webServicesSource;
   Future<dynamic> _initAppStorage() async {
     appStorage=await SharedPreferences.getInstance();
     return true;
@@ -90,12 +90,16 @@ class LoginWidget extends State<LoginState>{
                     print("cookies");
                   });
 
-                  webservicesSource=await _flutterWebviewPlugin.evalJavascript(
-                      "document.getElementsByClassName('web-services')[0].innerHTML;"
-                  );
+                  _flutterWebviewPlugin.evalJavascript(
+                    "document.getElementsByClassName('web-services')[0].innerHTML;"
+                  ).then((onJavascript){
+                    if(onJavascript!=null){
+                      webServicesSource=onJavascript;
+                    }
 
-                  _accessWithBiometric().then((onValue){
-                    _goHome();
+                    _accessWithBiometric().then((onValue){
+                      _goHome();
+                    });
                   });
 
                   _flutterWebviewPlugin.dispose();
@@ -139,16 +143,16 @@ class LoginWidget extends State<LoginState>{
   }
 
   Future<dynamic> _accessWithBiometric()async{
-    var localAuth = new LocalAuthentication();
+    List<BiometricType> availableBiometrics=await localAuth.getAvailableBiometrics();
 
-    List<BiometricType> availableBiometrics;
-    await localAuth.getAvailableBiometrics();
+    print(availableBiometrics);
 
     if(availableBiometrics!=null){
       if(availableBiometrics.contains(BiometricType.fingerprint)){
         try {
           bool didAuthenticate = await localAuth.authenticateWithBiometrics(
-              localizedReason: 'Por favor, identifíquese');
+            localizedReason: 'Por favor, identifíquese'
+          );
 
           if(didAuthenticate){
             return 1;
@@ -156,6 +160,7 @@ class LoginWidget extends State<LoginState>{
             return await _accessWithBiometric();
           }
         } on PlatformException catch (e) {
+          print(e);
           return 2;
         }
       }else{
@@ -172,7 +177,7 @@ class LoginWidget extends State<LoginState>{
         MaterialPageRoute(builder: (context)=>MenuState(
           title: "Menu",
           flutterWebviewPlugin: _flutterWebviewPlugin,
-          webServicesSource: webservicesSource,
+          webServicesSource: webServicesSource,
         ))
     );
   }

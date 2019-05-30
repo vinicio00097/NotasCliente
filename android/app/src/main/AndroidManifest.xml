@@ -11,8 +11,8 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="notas_cliente"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Cliente Notas"
+        android:icon="@mipmap/ic_launcher_type2">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
