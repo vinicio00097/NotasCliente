@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notas_cliente/Model/Curso.dart';
 import 'package:notas_cliente/Model/PensumItem.dart';
 import 'package:notas_cliente/Utils/ConnectionStatusSingleton.dart';
+import 'package:notas_cliente/Utils/ThemeSingleton.dart';
 import 'package:notas_cliente/View/Login/LoginActivity.dart';
 import 'package:notas_cliente/ViewModel/PensumViewModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,7 +66,7 @@ class PensumWidget extends State<PensumState>{
     _appStorage=await SharedPreferences.getInstance();
 
     for(String key in _appStorage.getKeys()){
-      _cookies[key]=_appStorage.get(key);
+      if(key!="isDark"&&key!="themeManagerActive") _cookies[key]=_appStorage.get(key);
     }
 
     return true;
@@ -124,12 +125,13 @@ class PensumWidget extends State<PensumState>{
     for(Curso item in _cursos){
       _cursosWidget.add(
         Card(
+          color: themeSingleton.isDark?Colors.grey[800]:null,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(10),
             ),
           ),
-          elevation: 3,
+          elevation: themeSingleton.isDark?0:3,
           child: Column(
             children: <Widget>[
               Stack(
@@ -154,7 +156,7 @@ class PensumWidget extends State<PensumState>{
                             top: Radius.circular(10.0),
                             bottom: Radius.circular(0.0)
                         ),
-                        color: Colors.amber
+                        color: themeSingleton.isDark?Colors.grey[800]:Colors.amber
                     ),
                   ),
                 ],
@@ -170,12 +172,18 @@ class PensumWidget extends State<PensumState>{
                         child: Text(
                           "Código",
                           textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: themeSingleton.isDark?Colors.white:null
+                          ),
                         )
                       ),
                       TableCell(
                         child: Text(
                           "Requisito",
                           textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: themeSingleton.isDark?Colors.white:null
+                          ),
                         )
                       )
                     ]
@@ -194,7 +202,7 @@ class PensumWidget extends State<PensumState>{
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.black54
+                                color: themeSingleton.isDark?Colors.white:null
                               ),
                             )
                         ),
@@ -204,7 +212,7 @@ class PensumWidget extends State<PensumState>{
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.black54
+                                color: themeSingleton.isDark?Colors.white:null
                             )
                           )
                         )
@@ -226,50 +234,61 @@ class PensumWidget extends State<PensumState>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.amber,
-        title: Text(
-          widget.title,
-        ),
+    return Theme(
+      data: ThemeData(
+          brightness: themeSingleton.isDark?Brightness.dark:Brightness.light,
+          accentColor: Colors.black26,
       ),
-      body: !_isLoading?RefreshIndicator(
-        color: Colors.amber,
-        onRefresh: (){
-          return _onRefresh();
-        },
-        child: Scrollbar(
-          child: ListView.builder(
-            itemBuilder: (context,index){
-              return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
-                  ),
-                ),
-                margin: EdgeInsets.all(5),
-                elevation: 3,
-                child: ExpansionTile(
-                  title: Text(
-                    _ciclosData[index].numero_ciclo.toUpperCase(),
-                    //textAlign: TextAlign.center,
-                  ),
-                  children: _getCursos(_ciclosData[index].cursos),
-                ),
-              );
-            },
-            itemCount: _ciclosData.length,
-          )
+      child: Scaffold(
+        backgroundColor: themeSingleton.isDark?Colors.black:null,
+        key: scaffoldKey,
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: themeSingleton.isDark?Colors.black:Colors.amber,
+          title: Text(
+            widget.title,
+          ),
         ),
-      ):Center(
-        child: Container(
-          width: 60.0,
-          height: 60.0,
-          child: CircularProgressIndicator(
-            strokeWidth: 5.0,
-            valueColor: AlwaysStoppedAnimation(Colors.amber),
+        body: !_isLoading?RefreshIndicator(
+          color: Colors.amber,
+          onRefresh: (){
+            return _onRefresh();
+          },
+          child: Scrollbar(
+              child: ListView.builder(
+                itemBuilder: (context,index){
+                  return Card(
+                    color: themeSingleton.isDark?Color.fromRGBO(68, 68, 68, 1):null,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                    margin: EdgeInsets.all(5),
+                    elevation: 3,
+                    child: ExpansionTile(
+                      title: Text(
+                        _ciclosData[index].numero_ciclo.toUpperCase(),
+                        //textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: themeSingleton.isDark?Colors.white:null
+                        ),
+                      ),
+                      children: _getCursos(_ciclosData[index].cursos),
+                    ),
+                  );
+                },
+                itemCount: _ciclosData.length,
+              )
+          ),
+        ):Center(
+          child: Container(
+            width: 60.0,
+            height: 60.0,
+            child: CircularProgressIndicator(
+              strokeWidth: 5.0,
+              valueColor: AlwaysStoppedAnimation(Colors.amber),
+            ),
           ),
         ),
       ),

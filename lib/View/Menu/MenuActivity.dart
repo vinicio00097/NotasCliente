@@ -9,12 +9,16 @@ import 'package:local_auth/local_auth.dart';
 import 'package:notas_cliente/Model/MenuItem.dart';
 import 'package:notas_cliente/Model/WebServiceItem.dart';
 import 'package:notas_cliente/Utils/LoginProvider.dart';
+import 'package:notas_cliente/Utils/ThemeSingleton.dart';
 import 'package:notas_cliente/View/Horario/HorarioActivity.dart';
 import 'package:notas_cliente/View/Login/LoginActivity.dart';
+import 'package:notas_cliente/View/Menu/ThemeListWidget.dart';
 import 'package:notas_cliente/View/Notas/NotasActivity.dart';
 import 'package:notas_cliente/View/Pensum/PensumActivity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+
+import 'ThemeListDialog.dart';
 
 class MenuState extends StatefulWidget{
   MenuState({
@@ -35,7 +39,7 @@ class MenuState extends StatefulWidget{
 
 class MenuWidget extends State<MenuState>{
   List<MenuItem> _menuItems=[
-    new MenuItem(itemTitle: "Notas",color: Color.fromRGBO(53, 56, 84, 1),icon: Icons.grade),
+    new MenuItem(itemTitle: "Notas",color: /*Color.fromRGBO(53, 56, 84, 1)*/Colors.blue,icon: Icons.grade),
     new MenuItem(itemTitle: "Pensum",color: Colors.amber,icon: Icons.format_list_bulleted),
     new MenuItem(itemTitle: "Horario",color: Colors.purple[400],icon: Icons.date_range),
     new MenuItem(itemTitle: "Cerrar sesión",color: Colors.deepOrangeAccent,assetImage: "assets/log-out.png")
@@ -46,6 +50,8 @@ class MenuWidget extends State<MenuState>{
   List<WebServiceItem> urls=[];
   var localAuth = new LocalAuthentication();
   Map<String,String> _cookies=new Map();
+  int _countDarkMode=0;
+  bool isManually=false;
 
   void initState() {
     _initAppStorage().then((onValue){
@@ -81,8 +87,10 @@ class MenuWidget extends State<MenuState>{
   Future<dynamic> _initAppStorage() async {
     _appStorage=await SharedPreferences.getInstance();
     for(String key in _appStorage.getKeys()){
-      _cookies[key]=_appStorage.get(key);
+      if(key!="isDark"&&key!="themeManagerActive") _cookies[key]=_appStorage.get(key);
     }
+
+    _appStorage.setBool("isDark", true);
     return true;
   }
 
@@ -93,11 +101,11 @@ class MenuWidget extends State<MenuState>{
       title: Text(
         widget.title,
         style: TextStyle(
-            color: Colors.black,
+            color: themeSingleton.isDark?Colors.white:Colors.black,
             fontSize: 25.0
         ),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: themeSingleton.isDark?Colors.black:Colors.white,
       automaticallyImplyLeading: false,
     );
     return appBar;
@@ -158,7 +166,7 @@ class MenuWidget extends State<MenuState>{
                 Radius.circular(15.0)
               )
             ),
-            backgroundColor: Colors.deepOrangeAccent,
+            backgroundColor: themeSingleton.isDark?Color.fromRGBO(68, 68, 68, 1):Colors.deepOrangeAccent,
             title: Text("Confirmación"),
             content: Text("Esta seguro de cerrar sesión ?"),
             actions: <Widget>[
@@ -183,7 +191,13 @@ class MenuWidget extends State<MenuState>{
       if(onValue!=null){
         if(onValue){
           widget.flutterWebviewPlugin.cleanCookies();
-          _appStorage.clear();
+          //_appStorage.clear();
+          for(String key in _appStorage.getKeys()){
+            if(key!="isDark"&&key!="themeManagerActive"){
+              _appStorage.remove(key);
+            }
+          }
+
 
           Navigator.pushReplacement(
             context,
@@ -198,113 +212,137 @@ class MenuWidget extends State<MenuState>{
     });
   }
 
-  /*void _selectOptionGrades(){
-    String semestre=DateTime.now().month<7?1.toString():2.toString();
+  void _onLongPressCloseSession(context){
+    if(!_appStorage.getBool("themeManagerActive")){
+      _countDarkMode++;
+      if(_countDarkMode>=2){
+        int left=5-_countDarkMode;
+        Scaffold.of(context).removeCurrentSnackBar();
+        Scaffold.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    "Estas a $left pasos de activar el administrador de temas."
+                )
+            )
+        );
 
-    showModalBottomSheet(
+        if(left==1){
+          _appStorage.setBool("themeManagerActive", true);
+          themeSingleton.isThemeManagerActive=_appStorage.get("themeManagerActive");
+
+          _countDarkMode=0;
+        }
+      }
+    }else{
+      Scaffold.of(context).hideCurrentSnackBar();
+      _showThemeManagerDialog();
+    }
+  }
+
+  void _showThemeManagerDialog(){
+    showDialog(
         context: context,
-        builder: (context){
-          return(
-              SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Column(
-                  children: <Widget>[
-                    ButtonTheme(
-                      minWidth: double.infinity,
-                      child: FlatButton(
-                        shape: StadiumBorder(
-                          side: BorderSide(
-                            color: Colors.black
-                          )
-                        ),
-                        onPressed: (){
-                          Navigator.pop(context,1);
-                        },
-                        child: Text("Ver actuales (Sementre "+semestre+" Año "+DateTime.now().year.toString()+")")
-                      ),
-                    ),
-                    ButtonTheme(
-                      minWidth: double.infinity,
-                      child: FlatButton(
-                        shape: StadiumBorder(
-                            side: BorderSide(
-                                color: Colors.black
-                            )
-                        ),
-                        onPressed: (){
-                          Navigator.pop(context,2);
-                        },
-                        child: Text("Selección (Semestre y Año)")
-                      ),
-                    ),
-                  ],
-                ),
-              )
+        builder: (BuildContext context){
+          return ThemeDialog(
+            title: "hola",
+            onChangeTheme: (theme){
+              if(theme.themeName=="Oscuro"){
+                themeSingleton.isDark=true;
+                _appStorage.setBool("isDark", themeSingleton.isDark);
+              }else{
+                themeSingleton.isDark=false;
+                _appStorage.setBool("isDark", themeSingleton.isDark);
+              }
+              isManually=true;
+              setState(() {
+              });
+            },
           );
         }
     ).then((onValue){
-
+      if(onValue!=null){
+        if(onValue){
+          setState(() {
+          });
+        }
+      }
     });
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {
     double height=((MediaQuery.of(context).size.height)/_menuItems.length)-20;
-    
-    return Scaffold(
-      appBar: _getAppBar(),
-      body: ListView.builder(
-        itemBuilder: (context,index){
-          return Stack(
-            children: <Widget>[
-              SizedBox.fromSize(
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                        Radius.circular(0.0)
-                    )
-                  ),
-                  margin: EdgeInsets.zero,
-                  color: _menuItems[index].color,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      index==_menuItems.length-1?Image.asset(
-                        _menuItems[index].assetImage,
-                        width: 70.0,
-                        height: 70.0,
-                        color: Colors.white,
-                      ):Icon(
-                        _menuItems[index].icon,
-                        size: 70.0,
-                        color: Colors.white,
-                      ),
-                      Text(
-                        _menuItems[index].itemTitle,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0
+    var brightness = MediaQuery.of(context).platformBrightness;
+
+    if(!themeSingleton.isThemeManagerActive){
+      themeSingleton.isDark=brightness == Brightness.dark;
+    }
+
+    if(_appStorage!=null) _appStorage.setBool("isDark", themeSingleton.isDark);
+
+    return Theme(
+      data: ThemeData(
+          brightness: themeSingleton.isDark?Brightness.dark:Brightness.light,
+          accentColor: Colors.black26,
+      ),
+      child: Scaffold(
+        appBar: _getAppBar(),
+        body: ListView.builder(
+          itemBuilder: (context,index){
+            return Stack(
+              children: <Widget>[
+                SizedBox.fromSize(
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(0.0)
+                        )
+                    ),
+                    margin: EdgeInsets.zero,
+                    color: themeSingleton.isDark?Colors.black:_menuItems[index].color,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        index==_menuItems.length-1?Image.asset(
+                          _menuItems[index].assetImage,
+                          width: 70.0,
+                          height: 70.0,
+                          color: themeSingleton.isDark?_menuItems[index].color:Colors.white,
+                        ):Icon(
+                          _menuItems[index].icon,
+                          size: 70.0,
+                          color: themeSingleton.isDark?_menuItems[index].color:Colors.white,
                         ),
-                      )
-                    ],
+                        Text(
+                          _menuItems[index].itemTitle,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0
+                          ),
+                        )
+                      ],
+                    ),
                   ),
+                  size: Size.fromHeight(height),
                 ),
-                size: Size.fromHeight(height),
-              ),
-              new Positioned.fill(
-              child: new Material(
-                  color: Colors.transparent,
-                  child: new InkWell(
-                    onTap: (){
-                      _getSelectedOption(index,_menuItems[index].itemTitle);
-                    },
-                  )
+                new Positioned.fill(
+                    child: new Material(
+                      color: Colors.transparent,
+                      child: new InkWell(
+                        onTap: (){
+                          _getSelectedOption(index,_menuItems[index].itemTitle);
+                        },
+                        onLongPress: (){
+                          if(index==_menuItems.length-1) _onLongPressCloseSession(context);
+                        },
+                      ),
+                    )
                 )
-              )
-            ],
-          );
-        },
-        itemCount: _menuItems.length,
+              ],
+            );
+          },
+          itemCount: _menuItems.length,
+        ),
       ),
     );
   }

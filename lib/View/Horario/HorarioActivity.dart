@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notas_cliente/Model/Curso.dart';
 import 'package:notas_cliente/Utils/ConnectionStatusSingleton.dart';
+import 'package:notas_cliente/Utils/ThemeSingleton.dart';
 import 'package:notas_cliente/View/Login/LoginActivity.dart';
 import 'package:notas_cliente/ViewModel/HorarioViewModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -64,7 +65,7 @@ class HorarioWidget extends State<HorarioState>{
     _appStorage=await SharedPreferences.getInstance();
 
     for(String key in _appStorage.getKeys()){
-      _cookies[key]=_appStorage.get(key);
+      if(key!="isDark"&&key!="themeManagerActive") _cookies[key]=_appStorage.get(key);
     }
 
     return true;
@@ -118,146 +119,163 @@ class HorarioWidget extends State<HorarioState>{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        elevation: 0.0,
-        title: Text(widget.title),
-        backgroundColor: Colors.purple[400],
+    return Theme(
+      data: ThemeData(
+          brightness: themeSingleton.isDark?Brightness.dark:Brightness.light,
+          accentColor: Colors.black26,
       ),
-      body: !_isLoading?RefreshIndicator(
-        color: Colors.purple[400],
-        onRefresh: (){
-          return _onRefresh();
-        },
-        child: Scrollbar(
-          child: ListView.builder(
-            itemBuilder: (context,index){
-              return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
-                  ),
-                ),
-                margin: EdgeInsets.all(5),
-                elevation: 4,
-                child: Column(
-                  children: <Widget>[
-                    Stack(
-                      children: <Widget>[
-                        Container(
-                          child: Column(
-                            children: <Widget>[
-                              ListTile(
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(
-                                  _horarioData[index].nombre,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(10.0),
-                                  bottom: Radius.circular(0.0)
-                              ),
-                              color: Colors.purple[400]
-                          ),
-                        ),
-
-                      ],
-                    ),
-                    Padding(
-                        padding: EdgeInsets.symmetric(vertical: 2)
-                    ),
-                    Table(
-                      children: [
-                        TableRow(
-                          children: [
-                            TableCell(
-                                child: Text(
-                                  "Salón",
-                                  textAlign: TextAlign.center,
-                                )
-                            ),
-                            TableCell(
-                                child: Text(
-                                  "Sección",
-                                  textAlign: TextAlign.center,
-                                )
-                            ),
-                            TableCell(
-                                child: Text(
-                                  "Horario",
-                                  textAlign: TextAlign.center,
-                                )
-                            )
-                          ]
-                        ),
-                        TableRow(
-                            children: [
-                              Padding(padding: EdgeInsets.symmetric(vertical: 2)),
-                              Padding(padding: EdgeInsets.symmetric(vertical: 2)),
-                              Padding(padding: EdgeInsets.symmetric(vertical: 2))
-                            ]
-                        ),
-                        TableRow(
-                            children: [
-                              TableCell(
-                                  child: Text(
-                                    _horarioData[index].salon,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black54
-                                    ),
-                                  )
-                              ),
-                              TableCell(
-                                  child: Text(
-                                    _horarioData[index].seccion,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black54
-                                    ),
-                                  )
-                              ),
-                              TableCell(
-                                  child: Text(
-                                    _horarioData[index].horario,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black54
-                                    ),
-                                  )
-                              )
-                            ]
-                        )
-                      ],
-                    ),
-                    Padding(
-                        padding: EdgeInsets.symmetric(vertical: 2)
-                    ),
-                  ],
-                ),
-              );
-            },
-            itemCount: _horarioData.length,
-          ),
+      child: Scaffold(
+        backgroundColor: themeSingleton.isDark?Colors.black:null,
+        key: scaffoldKey,
+        appBar: AppBar(
+          elevation: 0.0,
+          title: Text(widget.title),
+          backgroundColor: themeSingleton.isDark?Colors.black:Colors.purple[400],
         ),
-      ):Center(
-        child: Container(
-          width: 60.0,
-          height: 60.0,
-          child: CircularProgressIndicator(
-            strokeWidth: 5.0,
-            valueColor: AlwaysStoppedAnimation(Colors.purple[400]),
+        body: !_isLoading?RefreshIndicator(
+          color: Colors.purple[400],
+          onRefresh: (){
+            return _onRefresh();
+          },
+          child: Scrollbar(
+            child: ListView.builder(
+              itemBuilder: (context,index){
+                return Card(
+                  color: themeSingleton.isDark?Colors.black:null,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                  ),
+                  margin: EdgeInsets.all(5),
+                  elevation: 4,
+                  child: Column(
+                    children: <Widget>[
+                      Stack(
+                        children: <Widget>[
+                          Container(
+                            child: Column(
+                              children: <Widget>[
+                                ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text(
+                                    _horarioData[index].nombre,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.white
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(10.0),
+                                    bottom: Radius.circular(0.0)
+                                ),
+                                color: themeSingleton.isDark?Colors.black:Colors.purple[400]
+                            ),
+                          ),
+
+                        ],
+                      ),
+                      Padding(
+                          padding: EdgeInsets.symmetric(vertical: 2)
+                      ),
+                      Table(
+                        children: [
+                          TableRow(
+                              children: [
+                                TableCell(
+                                    child: Text(
+                                      "Salón",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: themeSingleton.isDark?Colors.white:null
+                                      ),
+                                    )
+                                ),
+                                TableCell(
+                                    child: Text(
+                                      "Sección",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: themeSingleton.isDark?Colors.white:null
+                                      ),
+                                    )
+                                ),
+                                TableCell(
+                                    child: Text(
+                                      "Horario",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          color: themeSingleton.isDark?Colors.white:null
+                                      ),
+                                    )
+                                )
+                              ]
+                          ),
+                          TableRow(
+                              children: [
+                                Padding(padding: EdgeInsets.symmetric(vertical: 2)),
+                                Padding(padding: EdgeInsets.symmetric(vertical: 2)),
+                                Padding(padding: EdgeInsets.symmetric(vertical: 2))
+                              ]
+                          ),
+                          TableRow(
+                              children: [
+                                TableCell(
+                                    child: Text(
+                                      _horarioData[index].salon,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: themeSingleton.isDark?Colors.white:null
+                                      ),
+                                    )
+                                ),
+                                TableCell(
+                                    child: Text(
+                                      _horarioData[index].seccion,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: themeSingleton.isDark?Colors.white:null
+                                      ),
+                                    )
+                                ),
+                                TableCell(
+                                    child: Text(
+                                      _horarioData[index].horario,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: themeSingleton.isDark?Colors.white:null
+                                      ),
+                                    )
+                                )
+                              ]
+                          )
+                        ],
+                      ),
+                      Padding(
+                          padding: EdgeInsets.symmetric(vertical: 2)
+                      ),
+                    ],
+                  ),
+                );
+              },
+              itemCount: _horarioData.length,
+            ),
+          ),
+        ):Center(
+          child: Container(
+            width: 60.0,
+            height: 60.0,
+            child: CircularProgressIndicator(
+              strokeWidth: 5.0,
+              valueColor: AlwaysStoppedAnimation(Colors.purple[400]),
+            ),
           ),
         ),
       ),
