@@ -7,6 +7,8 @@ import 'Utils/ThemeSingleton.dart';
 
 //void main() => runApp(MyApp());
 Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
 
   SharedPreferences appData=await SharedPreferences.getInstance();
   if(appData.getBool("themeManagerActive")==null) appData.setBool("themeManagerActive", false);

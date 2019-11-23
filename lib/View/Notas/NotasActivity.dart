@@ -132,6 +132,13 @@ class NotasWidget extends State<NotasState>{
             ),
           ),
           backgroundColor: meaning==1?Colors.green:meaning==2?null:Colors.amber,
+          action: SnackBarAction(
+            textColor: !themeSingleton.isDark?Colors.white:null,
+            label: "Ok",
+            onPressed: (){
+              scaffoldKey.currentState.hideCurrentSnackBar();
+            }
+          ),
         )
     );
   }
@@ -178,6 +185,9 @@ class NotasWidget extends State<NotasState>{
                               ),
                             )
                           ],
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 2.5)
                         )
                       ],
                     ),
@@ -224,6 +234,8 @@ class NotasWidget extends State<NotasState>{
   Color _getIndicatorColorText(String examFinal,String notaFinal){
     RegExp _hasValidGrade=new RegExp("[0-9]+[\*]*");
     List<String> _flagsGrades=["NSP","SDE"];
+
+    if(!themeSingleton.isDark)return Colors.white;
 
     if(_hasValidGrade.hasMatch(examFinal)){
       if(int.tryParse(notaFinal)<61){

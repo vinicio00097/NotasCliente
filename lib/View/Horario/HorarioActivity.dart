@@ -109,6 +109,13 @@ class HorarioWidget extends State<HorarioState>{
             ),
           ),
           backgroundColor: meaning==1?Colors.green:meaning==2?null:Colors.amber,
+          action: SnackBarAction(
+              textColor: !themeSingleton.isDark?Colors.white:null,
+              label: "Ok",
+              onPressed: (){
+                scaffoldKey.currentState.hideCurrentSnackBar();
+              }
+          )
         )
     );
   }
