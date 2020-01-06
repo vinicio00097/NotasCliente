@@ -332,9 +332,9 @@ class MenuWidget extends State<MenuState>{
                         onTap: (){
                           _getSelectedOption(index,_menuItems[index].itemTitle);
                         },
-                        onLongPress: (){
+                        onLongPress: index==_menuItems.length-1?(){
                           if(index==_menuItems.length-1) _onLongPressCloseSession(context);
-                        },
+                        }:null,
                       ),
                     )
                 )

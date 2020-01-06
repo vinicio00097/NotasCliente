@@ -34,7 +34,7 @@ class LoginState extends StatefulWidget{
 
 class LoginWidget extends State<LoginState>{
   bool _oneTime=false,_internet=true;
-  final _flutterWebviewPlugin=new FlutterWebviewPlugin();
+  var _flutterWebviewPlugin=new FlutterWebviewPlugin();
   final _targetURL="https://apps.umg.edu.gt/";
   SharedPreferences appStorage;
   StreamSubscription _connectionChangeStream;
@@ -42,11 +42,6 @@ class LoginWidget extends State<LoginState>{
   var localAuth = new LocalAuthentication();
   String webServicesSource;
   static const platform = const MethodChannel('flutter_cliente_notas/request_basic_auth');
-
-  Future<dynamic> _initAppStorage() async {
-    appStorage=await SharedPreferences.getInstance();
-    return true;
-  }
 
   @override
   void initState() {
@@ -60,6 +55,11 @@ class LoginWidget extends State<LoginState>{
     super.initState();
   }
 
+  Future<dynamic> _initAppStorage() async {
+    appStorage=await SharedPreferences.getInstance();
+    return true;
+  }
+
   void connectionChanged(dynamic hasConnection) {
     _isOnline = hasConnection;
     print(_isOnline);
@@ -67,6 +67,7 @@ class LoginWidget extends State<LoginState>{
 
   Future _loginAction() async {
     await ConnectionStatusSingleton.verifyConnection().then((onValue) async {
+      print("cargo");
       if(onValue){
         /*_flutterWebviewPlugin.launch(
           _targetURL,
@@ -75,6 +76,7 @@ class LoginWidget extends State<LoginState>{
         );*/
 
         _flutterWebviewPlugin.onStateChanged.listen((state) async{
+          print(state.type);
           switch (state.type){
             case WebViewState.startLoad:{
               if(!_oneTime){
@@ -136,19 +138,22 @@ class LoginWidget extends State<LoginState>{
             }break;
             default:{
               print(state.type);
-              print("no hay internet");
             }break;
           }
         });
       }else{
-        if(appStorage.getKeys().length>0){
+        _internet=!_internet;
+
+        setState(() {
+        });
+        /*if(appStorage.getKeys().length>0){
           _goHome();
         }else{
           _internet=!_internet;
 
           setState(() {
           });
-        }
+        }*/
       }
     });
 
@@ -241,6 +246,7 @@ class LoginWidget extends State<LoginState>{
       child: Scaffold(
         backgroundColor: themeSingleton.isDark?Colors.black:null,
         body: _internet?WebviewScaffold(
+          appCacheEnabled: true,
           initialChild: Center(
             child: Container(
               width: 60.0,
